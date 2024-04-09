@@ -3,6 +3,8 @@ package com.example.BankingApiApplication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+
 @RestController
 @RequestMapping("/api/accounts")
 public class AccountController {
@@ -24,6 +26,15 @@ public class AccountController {
                 .orElseThrow(() -> new IllegalArgumentException("Account not found with id: " + accountId));
         double currentBalance = account.getBalance();
         account.setBalance(currentBalance + deposit.getAmount());
+        Transaction transaction = new Transaction();
+        transaction.setType(TransactionType.DEPOSIT);
+        transaction.setAmount(deposit.getAmount());
+        transaction.setDateTime(LocalDateTime.now());
+        transaction.setAccount(account);
+
+        account.getTransactions().add(transaction);
+
+        accountRepository.save(account);
         accountRepository.save(account);
         return "Deposit of " + deposit.getAmount() + " successful. Current balance: " + account.getBalance();
     }
@@ -37,6 +48,13 @@ public class AccountController {
             return "Insufficient funds. Withdrawal failed.";
         }
         account.setBalance(currentBalance - depost.getAmount());
+        Transaction transaction = new Transaction();
+        transaction.setType(TransactionType.WITHDRAWAL);
+        transaction.setAmount(depost.getAmount());
+        transaction.setDateTime(LocalDateTime.now());
+        transaction.setAccount(account);
+
+        account.getTransactions().add(transaction);
         accountRepository.save(account);
         return "Withdrawal of " + depost.getAmount() + " successful. Current balance: " + account.getBalance();
     }

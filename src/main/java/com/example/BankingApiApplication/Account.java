@@ -1,10 +1,15 @@
 package com.example.BankingApiApplication;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.OneToMany;
 import lombok.Data;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Data
@@ -39,7 +44,9 @@ public class Account {
     public void setInitialBalance(double balance) {
         this.balance = balance;
     }
+    @Getter
+    @Setter
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
+    private List<Transaction> transactions = new ArrayList<>();
 }
-
-    // Getters and setters if not provided by Lombok
 
